@@ -115,3 +115,61 @@ class Maze:
         for i in range(self._num_cols):
             for j in range(self._num_rows):
                 self._cells[i][j].visited = False
+
+
+    def _solve(self):
+        return self._solve_r(0, 0)
+    
+
+    def _solve_r(self, i, j):
+        self._animate()
+
+        current_cell = self._cells[i][j]
+        current_cell.visited = True
+
+        if i == self._num_cols - 1 and j == self._num_rows - 1:
+            return True
+
+        above = j - 1
+        below = j + 1
+        left = i - 1
+        right = i + 1
+
+        if above >= 0:
+            cell = self._cells[i][above]
+            if not cell.has_bottom_wall and not current_cell.has_top_wall and not cell.visited:
+                current_cell.draw_move(cell)
+                res = self._solve_r(i, above)
+                if res:
+                    return True
+                else:
+                    current_cell.draw_move(cell, undo=True)
+        if below < self._num_rows:
+            cell = self._cells[i][below]
+            if not cell.has_top_wall and not current_cell.has_bottom_wall and not cell.visited:
+                current_cell.draw_move(cell)
+                res = self._solve_r(i, below)
+                if res:
+                    return True
+                else:
+                    current_cell.draw_move(cell, undo=True)
+        if left >= 0:
+            cell = self._cells[left][j]
+            if not cell.has_right_wall and not current_cell.has_left_wall and not cell.visited:
+                current_cell.draw_move(cell)
+                res = self._solve_r(left, j)
+                if res:
+                    return True
+                else:
+                    current_cell.draw_move(cell, undo=True)
+        if right < self._num_cols:
+            cell = self._cells[right][j]
+            if not cell.has_left_wall and not current_cell.has_right_wall and not cell.visited:
+                current_cell.draw_move(cell)
+                res = self._solve_r(right, j)
+                if res:
+                    return True
+                else:
+                    current_cell.draw_move(cell, undo=True)
+        
+        return False
